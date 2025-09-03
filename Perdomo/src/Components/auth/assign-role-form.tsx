@@ -1,7 +1,7 @@
 import React from "react";
 
 const ROLES = ["DISTRIBUIDOR", "GERENTE", "VENDEDOR"];
-const USER_POOL_ID = "us-east-2_t4jRmSWcA";
+const USER_POOL_ID = import.meta.env.VITE_USER_POOL_ID;
 
 type Props = {
   roleForm: { Username: string; GroupName: string };

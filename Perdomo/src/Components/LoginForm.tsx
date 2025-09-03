@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { loginUser } from "../utils/cognitoRegister";
+import { useToast } from "../context/toast-context";
 
 interface Props {
   onSuccess?: () => void;
@@ -10,20 +11,21 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const toast = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await loginUser(email, password);
-      alert("¡Inicio de sesión exitoso!");
+      toast.showToast("¡Inicio de sesión exitoso!", "success");
       setEmail("");
       setPassword("");
       if (onSuccess) onSuccess();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message || "Error al iniciar sesión");
+        toast.showToast(error.message || "Error al iniciar sesión", "error");
       } else {
-        alert("Error al iniciar sesión");
+        toast.showToast("Error al iniciar sesión", "error");
       }
     } finally {
       setLoading(false);

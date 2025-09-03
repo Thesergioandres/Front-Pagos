@@ -1,13 +1,11 @@
-import React from "react";
-import { useToast } from "../context/toast-context";
-import { useApi } from "../hooks/useApi";
-import type { CarteraFactura } from "../types";
-import CarteraTableUI from "./CarteraTableUI";
-import { exportToExcel } from "../utils/exportUtils";
+import { useToast } from "../../context/toast-context";
+import { useApi } from "../../hooks/useApi";
+import type { CarteraFactura } from "../../types";
+import CarteraTableUI from "../ui/cartera-table-ui";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
-function CarteraTable() {
+export default function CarteraTableContainer() {
   const toast = useToast();
   const {
     data,
@@ -26,23 +24,11 @@ function CarteraTable() {
       onError: () => toast.showToast("Error al cargar la cartera", "error"),
     }
   );
-  const handleExport = () => {
-    if (!data || data.length === 0) {
-      toast.showToast("No hay datos para exportar", "info");
-      return;
-    }
-    exportToExcel(data, "cartera-clientes");
-    toast.showToast("Exportación exitosa", "success");
-  };
-
   return (
     <CarteraTableUI
       data={data || []}
       loading={loading}
       onReload={handleLoadCartera}
-      onExport={handleExport}
     />
   );
 }
-
-export default React.memo(CarteraTable);

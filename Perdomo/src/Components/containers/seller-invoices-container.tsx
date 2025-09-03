@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useToast } from "../context/toast-context";
-import { useApi } from "../hooks/useApi";
-import type { Factura } from "../types";
-import SellerInvoicesUI from "./ui/seller-invoices-ui";
+import { useToast } from "../../context/toast-context";
+import { useApi } from "../../hooks/useApi";
+import type { Factura } from "../../types";
+import SellerInvoicesUI from "../ui/seller-invoices-ui";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
-export default function SellerInvoices() {
+export default function SellerInvoicesContainer() {
   const [nombre, setNombre] = useState("");
   const toast = useToast();
   const {
@@ -29,7 +29,6 @@ export default function SellerInvoices() {
         toast.showToast("Error al buscar facturas del vendedor", "error"),
     }
   );
-
   return (
     <SellerInvoicesUI
       data={data || []}

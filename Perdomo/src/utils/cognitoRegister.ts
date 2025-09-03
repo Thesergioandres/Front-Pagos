@@ -40,8 +40,26 @@ export function loginUser(email: string, password: string) {
 
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authDetails, {
-      onSuccess: (result) => resolve(result),
+      onSuccess: (result) => {
+        const idToken = result.getIdToken().getJwtToken();
+        localStorage.setItem("cognito_token", idToken);
+        resolve(result);
+      },
       onFailure: (err) => reject(err),
+    });
+  });
+}
+
+export function confirmUser(email: string, code: string) {
+  return new Promise((resolve, reject) => {
+    const userData = {
+      Username: email,
+      Pool: userPool,
+    };
+    const cognitoUser = new CognitoUser(userData);
+    cognitoUser.confirmRegistration(code, true, (err, result) => {
+      if (err) return reject(err);
+      resolve(result);
     });
   });
 }

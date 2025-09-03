@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { registerUser } from "../utils/cognitoRegister";
+import { useToast } from "../../context/toast-context";
+import { registerUser } from "../../utils/cognitoRegister";
 
 interface Props {
   onSuccess?: () => void;
@@ -11,21 +12,25 @@ const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const toast = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await registerUser(email, password, name);
-      alert("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
+      toast.showToast(
+        "¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.",
+        "success"
+      );
       setEmail("");
       setName("");
       setPassword("");
       if (onSuccess) onSuccess();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.showToast(error.message, "error");
       } else {
-        alert("Error en el registro");
+        toast.showToast("Error en el registro", "error");
       }
     } finally {
       setLoading(false);

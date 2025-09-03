@@ -1,25 +1,7 @@
 import { useState } from "react";
 import { authFetch } from "../utils/authFecht";
-
-type Factura = {
-  factura: string;
-  codigo: string;
-  cliente: string;
-  tipoFactura: string;
-  valorFactura: number;
-  poblacion: string;
-  condicionPago: string;
-  fechaFactura: string;
-  saldo: number;
-  vendedor: string;
-  observacion: string;
-  estado: string;
-  descuento: number;
-  apoyoAniversario: number;
-  retencionFuente: number;
-  ica: number;
-  abono: number;
-};
+import { useToast } from "../context/toast-context";
+import type { Factura } from "../types";
 
 type Props = {
   onFilterResult: (result: Factura[]) => void;
@@ -30,11 +12,14 @@ const fields = [
   { value: "cliente", label: "Cliente" },
 ];
 
+const API_BASE = import.meta.env.VITE_API_BASE;
+
 export default function PaymentFilter({ onFilterResult }: Props) {
   const [value, setValue] = useState("");
   const [field, setField] = useState(fields[0].value);
   const [loading, setLoading] = useState(false);
 
+  const toast = useToast();
   const handleSearch = async () => {
     if (!value) return;
     setLoading(true);
@@ -42,13 +27,13 @@ export default function PaymentFilter({ onFilterResult }: Props) {
       const params = new URLSearchParams();
       params.append(field, value);
       const res = await authFetch(
-        `https://sfjr0up5ok.execute-api.us-east-2.amazonaws.com/deploy/perdomo-api/api/facturas/buscar?${params.toString()}`
+        `${API_BASE}/facturas/buscar?${params.toString()}`
       );
       if (!res.ok) throw new Error("No se pudo buscar");
       const data = await res.json();
       onFilterResult(Array.isArray(data) ? data : [data]);
     } catch {
-      alert("Error al buscar facturas");
+      toast.showToast("Error al buscar facturas", "error");
       onFilterResult([]);
     }
     setLoading(false);

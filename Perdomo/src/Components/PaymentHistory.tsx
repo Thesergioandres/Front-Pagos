@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authFetch } from "../utils/authFecht";
+import { useToast } from "../context/toast-context";
 
 type PagoHistorial = {
   id: number;
@@ -14,14 +15,14 @@ type Props = {
   onClose: () => void;
 };
 
-const API_BASE =
-  "https://sfjr0up5ok.execute-api.us-east-2.amazonaws.com/deploy/perdomo-api/api";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function PaymentHistory({ facturaId, onClose }: Props) {
   const [historial, setHistorial] = useState<PagoHistorial[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const toast = useToast();
   const fetchHistorial = async () => {
     setLoading(true);
     try {
@@ -31,7 +32,7 @@ export default function PaymentHistory({ facturaId, onClose }: Props) {
       setHistorial(Array.isArray(data) ? data : [data]);
       setLoaded(true);
     } catch {
-      alert("Error al cargar el historial de pagos");
+      toast.showToast("Error al cargar el historial de pagos", "error");
       setHistorial([]);
     }
     setLoading(false);

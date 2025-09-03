@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { authFetch } from "../utils/authFecht";
+import { useApi } from "../hooks/useApi";
 
 type AlertaVencimiento = {
   factura: string;
@@ -9,29 +8,19 @@ type AlertaVencimiento = {
   saldoPendiente: number;
 };
 
-const API_BASE =
-  "https://sfjr0up5ok.execute-api.us-east-2.amazonaws.com/deploy/perdomo-api/api";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function AlertsVencimiento() {
-  const [alertas, setAlertas] = useState<AlertaVencimiento[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useApi<AlertaVencimiento[]>(async () => {
+    const res = await fetch(`${API_BASE}/facturas/alertas-vencimiento`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("No se pudo obtener las alertas");
+    const result = await res.json();
+    return Array.isArray(result) ? result : [result];
+  });
 
-  useEffect(() => {
-    const fetchAlertas = async () => {
-      try {
-        const res = await authFetch(`${API_BASE}/facturas/alertas-vencimiento`);
-        if (!res.ok) throw new Error("No se pudo obtener las alertas");
-        const data = await res.json();
-        setAlertas(Array.isArray(data) ? data : [data]);
-      } catch {
-        setAlertas([]);
-      }
-      setLoading(false);
-    };
-    fetchAlertas();
-  }, []);
-
-  if (loading || alertas.length === 0) return null;
+  if (loading || !Array.isArray(data) || data.length === 0) return null;
 
   return (
     <div className="mb-6 w-full flex flex-col items-center">
@@ -49,7 +38,7 @@ export default function AlertsVencimiento() {
               </tr>
             </thead>
             <tbody>
-              {alertas.map((a) => (
+              {data.map((a) => (
                 <tr key={a.factura}>
                   <td className="px-2 py-1">{a.factura}</td>
                   <td className="px-2 py-1">{a.cliente}</td>

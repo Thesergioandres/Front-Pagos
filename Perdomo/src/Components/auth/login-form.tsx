@@ -1,26 +1,31 @@
 import React, { useState } from "react";
-import { registerUser } from "../utils/cognitoRegister";
+import { loginUser } from "../../utils/cognitoRegister";
+import { useToast } from "../../context/toast-context";
 
-const RegisterForm: React.FC = () => {
+interface Props {
+  onSuccess?: () => void;
+}
+
+const LoginForm: React.FC<Props> = ({ onSuccess }) => {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const toast = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await registerUser(email, password, name);
-      alert("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
+      await loginUser(email, password);
+      toast.showToast("¡Inicio de sesión exitoso!", "success");
       setEmail("");
-      setName("");
       setPassword("");
+      if (onSuccess) onSuccess();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message || "Error en el registro");
+        toast.showToast(error.message || "Error al iniciar sesión", "error");
       } else {
-        alert("Error en el registro");
+        toast.showToast("Error al iniciar sesión", "error");
       }
     } finally {
       setLoading(false);
@@ -29,15 +34,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
-      <h2 className="text-xl font-bold text-center">Registro</h2>
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full border rounded px-3 py-2"
-        required
-      />
+      <h2 className="text-xl font-bold text-center">Iniciar Sesión</h2>
       <input
         type="email"
         placeholder="Correo electrónico"
@@ -56,13 +53,13 @@ const RegisterForm: React.FC = () => {
       />
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded"
+        className="w-full bg-green-600 text-white py-2 rounded"
         disabled={loading}
       >
-        {loading ? "Registrando..." : "Registrarse"}
+        {loading ? "Ingresando..." : "Iniciar Sesión"}
       </button>
     </form>
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

@@ -28,17 +28,20 @@ const ExcelUpload: React.FC<ExcelUploadProps> = ({
   };
 
   return (
-    <label className={className + " cursor-pointer"}>
-      {loading ? "Importando..." : "Importar Excel"}
-      <input
-        type="file"
-        accept=".xlsx,.xls"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        style={{ display: "none" }}
-        disabled={loading}
-      />
-    </label>
+    <div className={className}>
+      <label className="cursor-pointer block mb-2">
+        {loading ? "Importando..." : "Importar Excel"}
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          disabled={loading}
+        />
+      </label>
+      {/* Solo input para Excel, XML eliminado */}
+    </div>
   );
 };
 

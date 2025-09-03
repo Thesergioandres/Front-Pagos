@@ -7,14 +7,69 @@ type Props = {
   onHistory: (facturaId: string) => void; // Nueva prop
 };
 
-export default function PaymentTable({
+import React, { useState } from "react";
+import { useAuth } from "../context/auth-context";
+
+const PaymentTable: React.FC<Props> = React.memo(function PaymentTable({
   payments,
   onEdit,
   onDelete,
   onHistory,
-}: Props) {
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+
+  // Obtener rol real desde contexto
+  const { userRole } = useAuth();
+
+  const handleAuthorizeClick = (payment: Payment) => {
+    setSelectedPayment(payment);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedPayment(null);
+  };
+
+  const handleAuthorize = () => {
+    // Aquí iría la lógica real de autorización (API call)
+    alert("Descuento autorizado para factura " + selectedPayment?.factura);
+    handleCloseModal();
+  };
+
   return (
     <div>
+      {/* Modal de autorización */}
+      {modalOpen && selectedPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-2 text-blue-800">
+              Autorizar descuento
+            </h3>
+            <p className="mb-4">
+              Factura: <b>{selectedPayment.factura}</b>
+            </p>
+            <p className="mb-4">
+              Descuento solicitado: <b>${selectedPayment.descuento}</b>
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={handleAuthorize}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+              >
+                Autorizar
+              </button>
+              <button
+                onClick={handleCloseModal}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div
         className="w-3/4 max-w-full overflow-x-auto rounded-xl shadow-lg border border-blue-800 bg-white mx-auto"
         style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}
@@ -68,6 +123,9 @@ export default function PaymentTable({
               <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">ICA</th>
               <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">Abono</th>
               <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
+                Registrado por
+              </th>
+              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
                 Acciones
               </th>
             </tr>
@@ -87,7 +145,19 @@ export default function PaymentTable({
                 <td className="px-3 py-2 text-blue-800">{p.vendedor}</td>
                 <td className="px-3 py-2 text-blue-800">{p.observacion}</td>
                 <td className="px-3 py-2 text-blue-800">{p.estado}</td>
-                <td className="px-3 py-2 text-blue-800">{p.descuento}</td>
+                <td className="px-3 py-2 text-blue-800 flex items-center gap-2">
+                  {p.descuento}
+                  {/* Solo gerente o vendedor puede solicitar autorización */}
+                  {(userRole === "GERENTE" || userRole === "VENDEDOR") &&
+                    p.descuento > 0 && (
+                      <button
+                        className="ml-2 text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
+                        onClick={() => handleAuthorizeClick(p)}
+                      >
+                        Autorizar
+                      </button>
+                    )}
+                </td>
                 <td className="px-3 py-2 text-blue-800">
                   {p.apoyoAniversario}
                 </td>
@@ -95,18 +165,25 @@ export default function PaymentTable({
                 <td className="px-3 py-2 text-blue-800">{p.ica}</td>
                 <td className="px-3 py-2 text-blue-800">{p.abono}</td>
                 <td className="px-3 py-2 text-blue-800">
-                  <button
-                    onClick={() => onEdit(p)}
-                    className="text-green-600 hover:text-green-800"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => onDelete(p.factura)}
-                    className="text-red-600 hover:text-red-800 ml-2"
-                  >
-                    Eliminar
-                  </button>
+                  {p.registradoPor || "-"}
+                </td>
+                <td className="px-3 py-2 text-blue-800">
+                  {userRole === "GERENTE" && (
+                    <>
+                      <button
+                        onClick={() => onEdit(p)}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => onDelete(p.factura)}
+                        className="text-red-600 hover:text-red-800 ml-2"
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
                   <button
                     onClick={() => onHistory(p.factura)}
                     className="text-blue-600 hover:text-blue-800 ml-2"
@@ -121,4 +198,6 @@ export default function PaymentTable({
       </div>
     </div>
   );
-}
+});
+
+export default PaymentTable;

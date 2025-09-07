@@ -34,3 +34,45 @@ jobs:
           VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION || 'us-east-1' }}
           VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID || 'pool' }}
           VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID || 'client' }}
+
+  smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE || 'https://example.com/api' }}
+          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION || 'us-east-1' }}
+          VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID || 'pool' }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID || 'client' }}
+
+      - name: Start preview server
+        run: |
+          nohup npm run preview -- --port 4173 --strictPort >/dev/null 2>&1 &
+          echo $! > preview.pid
+          # Esperar a que el server esté arriba (máx 30s)
+          for i in {1..30}; do
+            if curl -sSf http://localhost:4173/ >/dev/null; then
+              echo "Preview UP"; break; fi; sleep 1; done
+          # Verificación final
+          curl -sSf http://localhost:4173/ >/dev/null
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if [ -f preview.pid ]; then
+            kill $(cat preview.pid) || true
+          fi

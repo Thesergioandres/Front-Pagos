@@ -19,12 +19,18 @@ import "./index.css";
 import App from "./App.tsx";
 
 // Comprobación de entorno solo en desarrollo
-const __env: any = (import.meta as any).env || {};
+const __env = import.meta.env as {
+  DEV: boolean;
+  VITE_API_BASE?: string;
+  VITE_COGNITO_REGION?: string;
+  VITE_USER_POOL_ID?: string;
+  VITE_COGNITO_CLIENT_ID?: string;
+};
 if (__env.DEV) {
   const apiBase = __env.VITE_API_BASE;
   const cognitoRegion = __env.VITE_COGNITO_REGION;
-  const userPoolId = __env.VITE_USER_POOL_ID as string | undefined;
-  const clientId = __env.VITE_COGNITO_CLIENT_ID as string | undefined;
+  const userPoolId = __env.VITE_USER_POOL_ID;
+  const clientId = __env.VITE_COGNITO_CLIENT_ID;
   // Mostrar valores clave (enmascarados donde aplica)
   console.info("[ENV] VITE_API_BASE:", apiBase);
   console.info("[ENV] Cognito:", {
@@ -47,9 +53,9 @@ if (!__env.DEV) {
       missing.join(", ")
     );
   } else {
-    const apiBase = __env.VITE_API_BASE as string | undefined;
-    const userPoolId = __env.VITE_USER_POOL_ID as string | undefined;
-    const clientId = __env.VITE_COGNITO_CLIENT_ID as string | undefined;
+    const apiBase = __env.VITE_API_BASE;
+    const userPoolId = __env.VITE_USER_POOL_ID;
+    const clientId = __env.VITE_COGNITO_CLIENT_ID;
     console.info("[ENV][prod] Variables de entorno presentes:", {
       apiBase: apiBase ? `${apiBase.slice(0, 24)}…` : undefined,
       region: __env.VITE_COGNITO_REGION,

@@ -16,7 +16,12 @@ const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validación de entorno en desarrollo para evitar 400 de Cognito por config incompleta
-    const env: any = (import.meta as any).env || {};
+    const env = import.meta.env as {
+      DEV: boolean;
+      VITE_COGNITO_REGION?: string;
+      VITE_USER_POOL_ID?: string;
+      VITE_COGNITO_CLIENT_ID?: string;
+    };
     if (env.DEV) {
       const missing: string[] = [];
       if (!env.VITE_COGNITO_REGION) missing.push("VITE_COGNITO_REGION");

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -27,8 +27,14 @@ jobs:
         run: npm run lint
 
       - name: Build
-        run: npm run build
+  run: npm run build
         env:
+      - name: Upload build artifacts (dist)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
           # Variables mínimas para pasar el build; ajusta si usas Cognito en build
           VITE_API_BASE: ${{ secrets.VITE_API_BASE || 'https://example.com/api' }}
           VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION || 'us-east-1' }}
@@ -46,7 +52,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -69,6 +75,11 @@ jobs:
               echo "Preview UP"; break; fi; sleep 1; done
           # Verificación final
           curl -sSf http://localhost:4173/ >/dev/null
+
+      - name: Smoke check title
+        run: |
+          html=$(curl -s http://localhost:4173/)
+          echo "$html" | grep -E "Sistema de Pagos|<div|<title>" -i
 
       - name: Stop preview server
         if: always()

@@ -5,15 +5,25 @@ import {
   CognitoUserAttribute,
 } from "amazon-cognito-identity-js";
 
-// Usa tus datos reales de pool
-const poolData = {
-  UserPoolId: "us-east-2_t4jRmSWcA",
-  ClientId: "3gqfebf7v0sudqp0mds14ategj",
-};
-const userPool = new CognitoUserPool(poolData);
+// Inicializa el pool desde variables de entorno de Vite
+function getUserPool() {
+  const env = import.meta.env as {
+    VITE_USER_POOL_ID?: string;
+    VITE_COGNITO_CLIENT_ID?: string;
+  };
+  const UserPoolId = env.VITE_USER_POOL_ID;
+  const ClientId = env.VITE_COGNITO_CLIENT_ID;
+  if (!UserPoolId || !ClientId) {
+    throw new Error(
+      "Configuración de Cognito incompleta: define VITE_USER_POOL_ID y VITE_COGNITO_CLIENT_ID"
+    );
+  }
+  return new CognitoUserPool({ UserPoolId, ClientId });
+}
 
 export function registerUser(email: string, password: string, name: string) {
   return new Promise((resolve, reject) => {
+    const userPool = getUserPool();
     userPool.signUp(
       email,
       password,
@@ -30,7 +40,7 @@ export function registerUser(email: string, password: string, name: string) {
 export function loginUser(email: string, password: string) {
   const userData = {
     Username: email,
-    Pool: userPool,
+    Pool: getUserPool(),
   };
   const cognitoUser = new CognitoUser(userData);
   const authDetails = new AuthenticationDetails({
@@ -54,7 +64,7 @@ export function confirmUser(email: string, code: string) {
   return new Promise((resolve, reject) => {
     const userData = {
       Username: email,
-      Pool: userPool,
+      Pool: getUserPool(),
     };
     const cognitoUser = new CognitoUser(userData);
     cognitoUser.confirmRegistration(code, true, (err, result) => {

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Input from "./ui/Input";
+import Button from "./ui/Button";
 
 interface RecordPaymentProps {
   onRegister: (data: {
@@ -52,28 +54,26 @@ const RecordPayment: React.FC<RecordPaymentProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto space-y-4"
+      className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg md:max-w-md mx-auto space-y-4"
     >
       <h2 className="text-xl font-bold mb-4">Registrar Pago</h2>
       <div>
         <label className="block text-gray-700">ID de Factura</label>
-        <input
+        <Input
           type="text"
           value={facturaId}
           onChange={(e) => setFacturaId(e.target.value)}
           required
-          className="w-full border rounded px-3 py-2"
         />
       </div>
       <div>
         <label className="block text-gray-700">Valor del Pago</label>
-        <input
+        <Input
           type="number"
           step="0.01"
           value={valorPago}
           onChange={(e) => setValorPago(e.target.value)}
           required
-          className="w-full border rounded px-3 py-2"
         />
       </div>
       <div>
@@ -88,20 +88,18 @@ const RecordPayment: React.FC<RecordPaymentProps> = ({
         <label className="block text-gray-700">
           Cuenta a la que se transfirió
         </label>
-        <input
+        <Input
           type="text"
           value={cuentaDestino}
           onChange={(e) => setCuentaDestino(e.target.value)}
-          className="w-full border rounded px-3 py-2"
         />
       </div>
       <div>
         <label className="block text-gray-700">Notas crédito</label>
-        <input
+        <Input
           type="text"
           value={notaCredito}
           onChange={(e) => setNotaCredito(e.target.value)}
-          className="w-full border rounded px-3 py-2"
         />
       </div>
       <div>
@@ -120,13 +118,9 @@ const RecordPayment: React.FC<RecordPaymentProps> = ({
           </div>
         )}
       </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
+      <Button type="submit" disabled={loading} isLoading={loading}>
         {loading ? "Registrando..." : "Registrar Pago"}
-      </button>
+      </Button>
       {/* Auditoría: mostrar usuario que registra el pago */}
       {usuarioActual && (
         <div className="text-xs text-gray-500 mt-2">

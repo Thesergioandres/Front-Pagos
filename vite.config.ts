@@ -27,6 +27,8 @@ export default defineConfig({
         target: "https://sfjr0up5ok.execute-api.us-east-2.amazonaws.com",
         changeOrigin: true,
         secure: true,
+        timeout: 120000,
+        proxyTimeout: 120000,
         rewrite: (path) => path.replace(/^\/api/, "/deploy/perdomo-api/api"),
       },
     },

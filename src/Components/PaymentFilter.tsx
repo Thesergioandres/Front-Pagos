@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { authFetch } from "../utils/authFecht";
 import { useToast } from "../context/use-toast";
+import { apiUrl } from "../utils/api";
 import type { Factura } from "../types";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Select from "./ui/Select";
 
 type Props = {
   onFilterResult: (result: Factura[]) => void;
@@ -18,7 +22,7 @@ const fields = [
   { value: "cliente", label: "Cliente" },
 ];
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function PaymentFilter({
   onFilterResult,
@@ -88,13 +92,15 @@ export default function PaymentFilter({
       const params = new URLSearchParams();
       params.append(field, value);
       const res = await authFetch(
-        `${API_BASE}/facturas/buscar?${params.toString()}`
+        apiUrl(`/facturas/buscar?${params.toString()}`)
       );
       if (!res.ok) throw new Error("No se pudo buscar");
       const data = await res.json();
+      const { normalizeToPayments } = await import("../utils/mappers");
+      const normalized = normalizeToPayments(data);
       // Ignorar respuestas obsoletas si hubo un cambio posterior
       if (lastRequestedRef.current !== queryKey) return;
-      onFilterResult(Array.isArray(data) ? data : [data]);
+      onFilterResult(normalized);
     } catch {
       toast.showToast("Error al buscar facturas", "error");
       onFilterResult([]);
@@ -110,41 +116,37 @@ export default function PaymentFilter({
   };
 
   return (
-    <div className="mb-6 flex justify-center gap-2">
-      <select
+    <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
+      <Select
         value={field}
         onChange={(e) => setField(e.target.value as "factura" | "cliente")}
-        className="px-3 py-2 border border-blue-400 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className="w-full sm:w-auto"
       >
         {fields.map((f) => (
           <option key={f.value} value={f.value}>
             {f.label}
           </option>
         ))}
-      </select>
-      <input
+      </Select>
+      <Input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={`Buscar por ${
           fields.find((f) => f.value === field)?.label
         }...`}
-        className="w-80 px-4 py-2 border border-blue-400 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className="w-full sm:w-80"
       />
-      <button
+      <Button
         onClick={() => void handleSearch()}
         disabled={loading || !value}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        isLoading={loading}
       >
         {loading ? "Buscando..." : "Buscar"}
-      </button>
-      <button
-        type="button"
-        onClick={handleClear}
-        className="bg-gray-200 text-gray-800 px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
-      >
+      </Button>
+      <Button type="button" variant="secondary" onClick={handleClear}>
         Limpiar
-      </button>
+      </Button>
     </div>
   );
 }

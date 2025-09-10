@@ -2,10 +2,11 @@ import { useToast } from "../../context/use-toast";
 import { useApi } from "../../hooks/useApi";
 import type { FacturaVencida } from "../../types";
 import { authFetch } from "../../utils/authFecht";
+import { apiUrl } from "../../utils/api";
 import FacturasVencidasTableUI from "../ui/facturas-vencidas-table-ui";
 import { useAuth } from "../../context/use-auth";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = import.meta.env.VITE_API_BASE;
 
 const FacturasVencidasTableContainer = () => {
   const toast = useToast();
@@ -17,7 +18,7 @@ const FacturasVencidasTableContainer = () => {
   } = useApi<FacturaVencida[]>(
     async () => {
       console.log("[DEBUG] Rol actual:", userRole);
-      const res = await authFetch(`${API_BASE}/facturas/alertas-vencimiento`);
+      const res = await authFetch(apiUrl(`/facturas/alertas-vencimiento`));
       if (!res.ok) throw new Error("No se pudo obtener las facturas vencidas");
       const result = await res.json();
       console.log("[DEBUG] Respuesta API facturas vencidas:", result);

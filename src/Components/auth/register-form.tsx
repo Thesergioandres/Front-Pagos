@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useToast } from "../../context/use-toast";
 import { registerUser } from "../../utils/cognitoRegister";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
 
 interface Props {
   onSuccess?: () => void;
@@ -11,6 +13,7 @@ const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const toast = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,11 +52,14 @@ const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
       setPassword("");
       if (onSuccess) onSuccess();
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.showToast(error.message, "error");
-      } else {
-        toast.showToast("Error en el registro", "error");
+      const err = error as { code?: string; message?: string };
+      let msg = err.message || "Error en el registro";
+      if (err.code === "InvalidPasswordException") {
+        msg = "La contraseña no cumple la política del pool.";
+      } else if (err.code === "UsernameExistsException") {
+        msg = "El usuario ya existe. Intenta iniciar sesión.";
       }
+      toast.showToast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -62,37 +68,50 @@ const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
       <h2 className="text-xl font-bold text-center">Registro</h2>
-      <input
+      <Input
         type="text"
         placeholder="Nombre"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full border rounded px-3 py-2"
         required
       />
-      <input
+      <Input
         type="email"
         placeholder="Correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full border rounded px-3 py-2"
         required
       />
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full border rounded px-3 py-2"
-        required
-      />
-      <button
+      <div className="relative">
+        <Input
+          type={showPassword ? "text" : "password"}
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword((v) => !v)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-600 underline"
+        >
+          {showPassword ? "Ocultar" : "Ver"}
+        </button>
+      </div>
+      <Button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded"
+        className="w-full"
         disabled={loading}
+        isLoading={loading}
       >
         {loading ? "Registrando..." : "Registrarse"}
-      </button>
+      </Button>
+      {import.meta.env.DEV && (
+        <p className="text-[11px] text-gray-500 text-center">
+          Requiere VITE_USER_POOL_ID y VITE_COGNITO_CLIENT_ID en
+          .env.development
+        </p>
+      )}
     </form>
   );
 };

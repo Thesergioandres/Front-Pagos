@@ -1,5 +1,6 @@
 import type { CarteraFactura } from "../types";
 import React from "react";
+import { mapMoraColor } from "../utils/moraColor";
 
 interface CarteraTableUIProps {
   data: CarteraFactura[];
@@ -52,6 +53,7 @@ const CarteraTableUI: React.FC<CarteraTableUIProps> = ({
                 <th className="px-3 py-2">Factura</th>
                 <th className="px-3 py-2">Cliente</th>
                 <th className="px-3 py-2">Valor</th>
+                <th className="px-3 py-2">Saldo Pendiente</th>
                 <th className="px-3 py-2">Fecha Vencimiento</th>
                 <th className="px-3 py-2">Días Mora</th>
                 <th className="px-3 py-2">Saldo Pendiente</th>
@@ -59,7 +61,11 @@ const CarteraTableUI: React.FC<CarteraTableUIProps> = ({
             </thead>
             <tbody>
               {data.map((factura) => (
-                <tr key={factura.facturaId} className="even:bg-blue-50">
+                <tr
+                  key={factura.facturaId}
+                  className="even:bg-blue-50"
+                  style={{ background: mapMoraColor(factura.diasMora) }}
+                >
                   <td className="px-3 py-2 text-blue-800">
                     {factura.facturaId}
                   </td>
@@ -68,13 +74,13 @@ const CarteraTableUI: React.FC<CarteraTableUIProps> = ({
                     ${factura.valor.toLocaleString()}
                   </td>
                   <td className="px-3 py-2 text-blue-800">
+                    ${factura.saldoPendiente.toLocaleString()}
+                  </td>
+                  <td className="px-3 py-2 text-blue-800">
                     {factura.fechaVencimiento}
                   </td>
                   <td className="px-3 py-2 text-blue-800">
                     {factura.diasMora}
-                  </td>
-                  <td className="px-3 py-2 text-blue-800">
-                    ${factura.valor.toLocaleString()}
                   </td>
                 </tr>
               ))}

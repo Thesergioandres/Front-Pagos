@@ -5,8 +5,9 @@ import { useApi } from "../hooks/useApi";
 import type { CarteraFactura } from "../types";
 import CarteraTableUI from "./CarteraTableUI";
 import { exportToExcel } from "../utils/exportUtils";
+import { apiUrl } from "../utils/api";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = import.meta.env.VITE_API_BASE;
 
 function CarteraTable() {
   const toast = useToast();
@@ -16,10 +17,32 @@ function CarteraTable() {
     execute: handleLoadCartera,
   } = useApi<CarteraFactura[]>(
     async () => {
-      const res = await authFetch(`${API_BASE}/facturas/cartera`);
+      const res = await authFetch(apiUrl(`/facturas/cartera`));
       if (!res.ok) throw new Error("No se pudo obtener la cartera");
-      const result = await res.json();
-      return Array.isArray(result) ? result : [result];
+      const raw = await res.json();
+      const arr = Array.isArray(raw) ? raw : [raw];
+      const data = arr.map((item) => {
+        const o = (item ?? {}) as Record<string, unknown>;
+        const get = (k: string) => o[k];
+        return {
+          facturaId: String(get("facturaId") ?? get("factura") ?? ""),
+          cliente: String(get("cliente") ?? get("nombreCliente") ?? ""),
+          valor: Number(get("valor") ?? get("valorFactura") ?? 0),
+          saldoPendiente: Number(
+            get("saldoPendiente") ??
+              get("saldo_pendiente") ??
+              get("saldo") ??
+              get("valor") ??
+              0
+          ),
+          fechaVencimiento: String(
+            get("fechaVencimiento") ?? get("fecha_vencimiento") ?? ""
+          ),
+          diasMora: Number(get("diasMora") ?? get("dias_mora") ?? 0),
+          color: String(get("color") ?? ""),
+        } as CarteraFactura;
+      });
+      return data;
     },
     {
       onError: () => toast.showToast("Error al cargar la cartera", "error"),

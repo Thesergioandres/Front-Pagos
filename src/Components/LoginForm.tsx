@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Button from "./ui/Button";
 import { loginUser } from "../utils/cognitoRegister";
 import { useToast } from "../context/use-toast";
 
@@ -40,7 +41,7 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
         placeholder="Correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full border rounded px-3 py-2"
+        className="w-full border rounded px-3 py-2 bg-black text-white border-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
         required
       />
       <input
@@ -48,16 +49,18 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
         placeholder="Contraseña"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full border rounded px-3 py-2"
+        className="w-full border rounded px-3 py-2 bg-black text-white border-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
         required
       />
-      <button
+      <Button
         type="submit"
-        className="w-full bg-green-600 text-white py-2 rounded"
+        variant="back"
+        className="w-full"
         disabled={loading}
+        isLoading={loading}
       >
         {loading ? "Ingresando..." : "Iniciar Sesión"}
-      </button>
+      </Button>
     </form>
   );
 };

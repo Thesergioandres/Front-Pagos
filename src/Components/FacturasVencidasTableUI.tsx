@@ -1,4 +1,5 @@
 import type { FacturaVencida } from "../types";
+import { mapMoraColor } from "../utils/moraColor";
 import React from "react";
 
 interface FacturasVencidasTableUIProps {
@@ -46,7 +47,11 @@ const FacturasVencidasTableUI: React.FC<FacturasVencidasTableUIProps> = ({
             </thead>
             <tbody>
               {data.map((factura) => (
-                <tr key={factura.factura} className="even:bg-red-50">
+                <tr
+                  key={factura.factura}
+                  className="even:bg-red-50"
+                  style={{ background: mapMoraColor(factura.diasMora) }}
+                >
                   <td className="px-3 py-2 text-red-800">{factura.factura}</td>
                   <td className="px-3 py-2 text-red-800">{factura.cliente}</td>
                   <td className="px-3 py-2 text-red-800">

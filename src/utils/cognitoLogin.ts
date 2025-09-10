@@ -25,7 +25,11 @@ export function loginUser(email: string, password: string) {
     cognitoUser.authenticateUser(authDetails, {
       onSuccess: (result) => {
         const idToken = result.getIdToken().getJwtToken();
+        const accessToken = result.getAccessToken().getJwtToken();
         localStorage.setItem("cognito_token", idToken);
+        localStorage.setItem("cognito_id_token", idToken);
+        localStorage.setItem("cognito_access_token", accessToken);
+        localStorage.setItem("AUTH_TOKEN_TYPE", "id");
         resolve(result);
       },
       onFailure: (err) => reject(err),

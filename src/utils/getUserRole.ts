@@ -1,5 +1,8 @@
 export function getUserRole(): string | null {
-  const token = localStorage.getItem("cognito_token");
+  // Preferir id token (contiene cognito:groups), mantener compatibilidad con clave vieja
+  const token =
+    localStorage.getItem("cognito_id_token") ||
+    localStorage.getItem("cognito_token");
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Dashboard from "../Dashboard";
 import { authFetch } from "../../utils/authFecht";
+import { apiUrl } from "../../utils/api";
 
 interface Indicadores {
   carteraPendiente: number;
@@ -18,9 +19,7 @@ const DashboardContainer = () => {
     const fetchIndicadores = async () => {
       setLoading(true);
       try {
-        const res = await authFetch(
-          `${import.meta.env.VITE_API_BASE}/dashboard/indicadores`
-        );
+        const res = await authFetch(apiUrl(`/dashboard/indicadores`));
         if (!res.ok) throw new Error("No se pudo obtener indicadores");
         const data = await res.json();
         setIndicadores(data);

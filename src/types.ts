@@ -3,6 +3,7 @@ export type CarteraFactura = {
   facturaId: string;
   cliente: string;
   valor: number;
+  saldoPendiente: number;
   fechaVencimiento: string;
   diasMora: number;
   color: string;
@@ -19,7 +20,8 @@ export type FacturaVencida = {
 
 // Alias para usar Payment como Factura (estructura igual)
 export type Factura = Payment;
-export type Rol = "Administrador" | "Vendedor" | "Distribuidor";
+// Roles alineados con Cognito/backend (claim cognito:groups)
+export type Rol = "GERENTE" | "VENDEDOR" | "DISTRIBUIDOR";
 
 export interface Usuario {
   nombre: string;

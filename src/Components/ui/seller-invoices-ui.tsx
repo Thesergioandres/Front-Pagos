@@ -1,4 +1,6 @@
 import type { Factura } from "../../types";
+import Button from "./Button";
+import Input from "./Input";
 
 type Props = {
   data: Factura[];
@@ -17,64 +19,104 @@ export default function SellerInvoicesUI({
 }: Props) {
   console.log("[SellerInvoicesUI] Datos recibidos:", data);
   return (
-    <div>
-      <div className="flex gap-2 mb-4">
-        <input
-          className="border px-3 py-2 rounded w-full"
+    <div className="w-full max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <Input
           placeholder="Nombre del vendedor"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+        <Button
           onClick={onReload}
           disabled={loading || !nombre}
+          isLoading={loading}
         >
           {loading ? "Buscando..." : "Buscar"}
-        </button>
+        </Button>
       </div>
       {Array.isArray(data) && data.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-xs">
+        <div
+          className="w-full max-w-full overflow-x-auto rounded-xl shadow-lg border border-brand-700 bg-white"
+          style={{ maxHeight: "calc(90vh - 200px)", overflowY: "auto" }}
+        >
+          <table className="min-w-[1000px] text-xs">
             <thead>
-              <tr>
-                <th>Factura</th>
-                <th>Código</th>
-                <th>Tipo</th>
-                <th>Valor</th>
-                <th>Población</th>
-                <th>Cond. Pago</th>
-                <th>Fecha</th>
-                <th>Saldo</th>
-                <th>Vendedor</th>
-                <th>Observación</th>
-                <th>Estado</th>
-                <th>Descuento</th>
-                <th>Apoyo Aniv.</th>
-                <th>Ret. Fuente</th>
-                <th>ICA</th>
-                <th>Abono</th>
+              <tr className="bg-brand-800 text-white font-semibold">
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Factura
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Código
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Tipo
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Valor
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Población
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Cond. Pago
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Fecha
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Saldo
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Vendedor
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Observación
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Estado
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Descuento
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Apoyo Aniv.
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Ret. Fuente
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  ICA
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Abono
+                </th>
               </tr>
             </thead>
             <tbody>
               {data.map((f) => (
-                <tr key={f.factura}>
-                  <td>{f.factura}</td>
-                  <td>{f.codigo}</td>
-                  <td>{f.tipoFactura}</td>
-                  <td>{f.valorFactura}</td>
-                  <td>{f.poblacion}</td>
-                  <td>{f.condicionPago}</td>
-                  <td>{f.fechaFactura}</td>
-                  <td>{f.saldo}</td>
-                  <td>{f.vendedor}</td>
-                  <td>{f.observacion}</td>
-                  <td>{f.estado}</td>
-                  <td>{f.descuento}</td>
-                  <td>{f.apoyoAniversario}</td>
-                  <td>{f.retencionFuente}</td>
-                  <td>{f.ica}</td>
-                  <td>{f.abono}</td>
+                <tr key={f.factura} className="even:bg-brand-50">
+                  <td className="px-3 py-2 text-brand-800">{f.factura}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.codigo}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.tipoFactura}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.valorFactura}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.poblacion}</td>
+                  <td className="px-3 py-2 text-brand-800">
+                    {f.condicionPago}
+                  </td>
+                  <td className="px-3 py-2 text-brand-800">{f.fechaFactura}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.saldo}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.vendedor}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.observacion}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.estado}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.descuento}</td>
+                  <td className="px-3 py-2 text-brand-800">
+                    {f.apoyoAniversario}
+                  </td>
+                  <td className="px-3 py-2 text-brand-800">
+                    {f.retencionFuente}
+                  </td>
+                  <td className="px-3 py-2 text-brand-800">{f.ica}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.abono}</td>
                 </tr>
               ))}
             </tbody>

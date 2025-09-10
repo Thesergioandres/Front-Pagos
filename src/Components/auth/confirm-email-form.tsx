@@ -1,4 +1,6 @@
 import React from "react";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
 
 type Props = {
   confirmForm: { Username: string; ConfirmationCode: string };
@@ -20,8 +22,7 @@ const ConfirmEmailForm: React.FC<Props> = ({
       <label className="block text-gray-700 text-sm mb-1">
         Correo electrónico:
       </label>
-      <input
-        className="w-full p-2 border rounded bg-gray-100"
+      <Input
         type="email"
         name="Username"
         value={confirmForm.Username}
@@ -29,8 +30,8 @@ const ConfirmEmailForm: React.FC<Props> = ({
         readOnly
       />
     </div>
-    <input
-      className="w-full mb-3 p-2 border rounded"
+    <Input
+      className="mb-3"
       type="text"
       name="ConfirmationCode"
       placeholder="Código de confirmación"
@@ -38,12 +39,9 @@ const ConfirmEmailForm: React.FC<Props> = ({
       onChange={onChange}
       required
     />
-    <button
-      className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-      type="submit"
-    >
+    <Button className="w-full" type="submit">
       Confirmar
-    </button>
+    </Button>
   </form>
 );
 

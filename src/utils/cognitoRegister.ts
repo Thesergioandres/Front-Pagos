@@ -52,7 +52,14 @@ export function loginUser(email: string, password: string) {
     cognitoUser.authenticateUser(authDetails, {
       onSuccess: (result) => {
         const idToken = result.getIdToken().getJwtToken();
+        const accessToken = result.getAccessToken().getJwtToken();
+        // Guardar ambos: access para llamadas a API, id para roles (grupos)
+        localStorage.setItem("cognito_access_token", accessToken);
+        localStorage.setItem("cognito_id_token", idToken);
+        // Compatibilidad: conservar cognito_token como idToken (usado por getUserRole antiguo)
         localStorage.setItem("cognito_token", idToken);
+        // Preferencia: usar id token por defecto para evitar 401 si el backend valida id
+        localStorage.setItem("AUTH_TOKEN_TYPE", "id");
         resolve(result);
       },
       onFailure: (err) => reject(err),

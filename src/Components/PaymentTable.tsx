@@ -9,6 +9,9 @@ type Props = {
 
 import React, { useState } from "react";
 import { useAuth } from "../context/use-auth";
+import Button from "./ui/Button";
+import { TableContainer } from "./ui/table";
+import { tableClasses } from "./ui/tableClasses";
 
 const PaymentTable: React.FC<Props> = React.memo(function PaymentTable({
   payments,
@@ -44,7 +47,7 @@ const PaymentTable: React.FC<Props> = React.memo(function PaymentTable({
       {modalOpen && selectedPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-2 text-blue-800">
+            <h3 className="text-lg font-bold mb-2 text-brand-800">
               Autorizar descuento
             </h3>
             <p className="mb-4">
@@ -54,148 +57,107 @@ const PaymentTable: React.FC<Props> = React.memo(function PaymentTable({
               Descuento solicitado: <b>${selectedPayment.descuento}</b>
             </p>
             <div className="flex gap-2 justify-end">
-              <button
-                onClick={handleAuthorize}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-              >
+              <Button variant="success" onClick={handleAuthorize}>
                 Autorizar
-              </button>
-              <button
-                onClick={handleCloseModal}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
-              >
+              </Button>
+              <Button variant="secondary" onClick={handleCloseModal}>
                 Cancelar
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
-      <div
-        className="w-3/4 max-w-full overflow-x-auto rounded-xl shadow-lg border border-blue-800 bg-white mx-auto"
-        style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}
-      >
-        <table className="min-w-[1200px]">
+      <TableContainer className="mx-auto">
+        <table
+          className={`min-w-[900px] md:min-w-[1200px] ${tableClasses.table}`}
+        >
           <thead>
-            <tr className="bg-blue-800 text-white font-semibold">
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Factura
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Código
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Cliente
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Tipo Factura
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Valor Factura
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Población
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Condición Pago
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Fecha Factura
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">Saldo</th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Vendedor
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Observación
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Estado
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Descuento
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Apoyo Aniversario
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Retención Fuente
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">ICA</th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">Abono</th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Registrado por
-              </th>
-              <th className="px-3 py-2 sticky top-0 bg-blue-800 z-10">
-                Acciones
-              </th>
+            <tr className={tableClasses.headRow}>
+              <th className={tableClasses.th}>Factura</th>
+              <th className={tableClasses.th}>Código</th>
+              <th className={tableClasses.th}>Cliente</th>
+              <th className={tableClasses.th}>Tipo Factura</th>
+              <th className={tableClasses.th}>Valor Factura</th>
+              <th className={tableClasses.th}>Población</th>
+              <th className={tableClasses.th}>Condición Pago</th>
+              <th className={tableClasses.th}>Fecha Factura</th>
+              <th className={tableClasses.th}>Saldo</th>
+              <th className={tableClasses.th}>Vendedor</th>
+              <th className={tableClasses.th}>Observación</th>
+              <th className={tableClasses.th}>Estado</th>
+              <th className={tableClasses.th}>Descuento</th>
+              <th className={tableClasses.th}>Apoyo Aniversario</th>
+              <th className={tableClasses.th}>Retención Fuente</th>
+              <th className={tableClasses.th}>ICA</th>
+              <th className={tableClasses.th}>Abono</th>
+              <th className={tableClasses.th}>Registrado por</th>
+              <th className={tableClasses.th}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {payments.map((p, idx) => (
-              <tr key={idx} className="even:bg-blue-50">
-                <td className="px-3 py-2 text-blue-800">{p.factura}</td>
-                <td className="px-3 py-2 text-blue-800">{p.codigo}</td>
-                <td className="px-3 py-2 text-blue-800">{p.cliente}</td>
-                <td className="px-3 py-2 text-blue-800">{p.tipoFactura}</td>
-                <td className="px-3 py-2 text-blue-800">{p.valorFactura}</td>
-                <td className="px-3 py-2 text-blue-800">{p.poblacion}</td>
-                <td className="px-3 py-2 text-blue-800">{p.condicionPago}</td>
-                <td className="px-3 py-2 text-blue-800">{p.fechaFactura}</td>
-                <td className="px-3 py-2 text-blue-800">{p.saldo}</td>
-                <td className="px-3 py-2 text-blue-800">{p.vendedor}</td>
-                <td className="px-3 py-2 text-blue-800">{p.observacion}</td>
-                <td className="px-3 py-2 text-blue-800">{p.estado}</td>
-                <td className="px-3 py-2 text-blue-800 flex items-center gap-2">
+              <tr key={idx} className={tableClasses.tr}>
+                <td className={tableClasses.td}>{p.factura}</td>
+                <td className={tableClasses.td}>{p.codigo}</td>
+                <td className={tableClasses.td}>{p.cliente}</td>
+                <td className={tableClasses.td}>{p.tipoFactura}</td>
+                <td className={tableClasses.td}>{p.valorFactura}</td>
+                <td className={tableClasses.td}>{p.poblacion}</td>
+                <td className={tableClasses.td}>{p.condicionPago}</td>
+                <td className={tableClasses.td}>{p.fechaFactura}</td>
+                <td className={tableClasses.td}>{p.saldo}</td>
+                <td className={tableClasses.td}>{p.vendedor}</td>
+                <td className={tableClasses.td}>{p.observacion}</td>
+                <td className={tableClasses.td}>{p.estado}</td>
+                <td className={`${tableClasses.td} flex items-center gap-2`}>
                   {p.descuento}
                   {/* Solo gerente o vendedor puede solicitar autorización */}
                   {(userRole === "GERENTE" || userRole === "VENDEDOR") &&
                     p.descuento > 0 && (
-                      <button
-                        className="ml-2 text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
+                      <Button
+                        className="ml-2 !px-2 !py-1 text-xs bg-yellow-500 hover:bg-yellow-600 text-white"
                         onClick={() => handleAuthorizeClick(p)}
                       >
                         Autorizar
-                      </button>
+                      </Button>
                     )}
                 </td>
-                <td className="px-3 py-2 text-blue-800">
-                  {p.apoyoAniversario}
-                </td>
-                <td className="px-3 py-2 text-blue-800">{p.retencionFuente}</td>
-                <td className="px-3 py-2 text-blue-800">{p.ica}</td>
-                <td className="px-3 py-2 text-blue-800">{p.abono}</td>
-                <td className="px-3 py-2 text-blue-800">
-                  {p.registradoPor || "-"}
-                </td>
-                <td className="px-3 py-2 text-blue-800">
+                <td className={tableClasses.td}>{p.apoyoAniversario}</td>
+                <td className={tableClasses.td}>{p.retencionFuente}</td>
+                <td className={tableClasses.td}>{p.ica}</td>
+                <td className={tableClasses.td}>{p.abono}</td>
+                <td className={tableClasses.td}>{p.registradoPor || "-"}</td>
+                <td className={tableClasses.td}>
                   {userRole === "GERENTE" && (
                     <>
-                      <button
+                      <Button
+                        variant="success"
                         onClick={() => onEdit(p)}
-                        className="text-green-600 hover:text-green-800"
+                        className="!bg-transparent text-green-600 hover:text-green-800 hover:underline"
                       >
                         Editar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="danger"
                         onClick={() => onDelete(p.factura)}
-                        className="text-red-600 hover:text-red-800 ml-2"
+                        className="!bg-transparent text-red-600 hover:text-red-800 hover:underline ml-2"
                       >
                         Eliminar
-                      </button>
+                      </Button>
                     </>
                   )}
-                  <button
+                  <Button
                     onClick={() => onHistory(p.factura)}
-                    className="text-blue-600 hover:text-blue-800 ml-2"
+                    className="!bg-transparent text-brand-600 hover:text-brand-800 hover:underline ml-2"
                   >
                     Ver historial
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </TableContainer>
     </div>
   );
 });

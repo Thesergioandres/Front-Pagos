@@ -1,4 +1,7 @@
 import React from "react";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
+import Select from "../ui/Select";
 
 const ROLES = ["DISTRIBUIDOR", "GERENTE", "VENDEDOR"];
 const USER_POOL_ID = import.meta.env.VITE_USER_POOL_ID;
@@ -17,8 +20,8 @@ const AssignRoleForm: React.FC<Props> = ({ roleForm, onChange, onSubmit }) => (
     onSubmit={onSubmit}
   >
     <h2 className="text-2xl font-bold mb-4">Asignar Rol a Usuario</h2>
-    <input
-      className="w-full mb-3 p-2 border rounded"
+    <Input
+      className="mb-3"
       type="text"
       name="Username"
       placeholder="Correo electrónico del usuario"
@@ -26,8 +29,8 @@ const AssignRoleForm: React.FC<Props> = ({ roleForm, onChange, onSubmit }) => (
       onChange={onChange}
       required
     />
-    <select
-      className="w-full mb-3 p-2 border rounded"
+    <Select
+      className="mb-3"
       name="GroupName"
       value={roleForm.GroupName}
       onChange={onChange}
@@ -38,21 +41,18 @@ const AssignRoleForm: React.FC<Props> = ({ roleForm, onChange, onSubmit }) => (
           {role}
         </option>
       ))}
-    </select>
-    <input
-      className="w-full mb-3 p-2 border rounded bg-gray-100"
+    </Select>
+    <Input
+      className="mb-3 bg-gray-100"
       type="text"
       name="UserPoolId"
       value={USER_POOL_ID}
       disabled
       readOnly
     />
-    <button
-      className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
-      type="submit"
-    >
+    <Button className="w-full" type="submit">
       Asignar Rol
-    </button>
+    </Button>
     <p className="text-xs text-gray-500 mt-2">
       * Esta acción requiere ejecutarse desde un backend seguro.
     </p>

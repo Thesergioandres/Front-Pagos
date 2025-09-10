@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { loginUser } from "../../utils/cognitoRegister";
 import { useToast } from "../../context/use-toast";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
 
 interface Props {
   onSuccess?: () => void;
@@ -35,7 +37,9 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
       if (!env.VITE_COGNITO_CLIENT_ID) missing.push("VITE_COGNITO_CLIENT_ID");
       if (missing.length > 0) {
         toast.showToast(
-          `Faltan variables de Cognito: ${missing.join(", ")}. Configúralas en .env.development o variables del entorno antes de iniciar sesión.`,
+          `Faltan variables de Cognito: ${missing.join(
+            ", "
+          )}. Configúralas en .env.development o variables del entorno antes de iniciar sesión.`,
           "error"
         );
         return;
@@ -54,7 +58,8 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
       const message = err.message;
       let friendly = message || "Error al iniciar sesión";
       if (code === "UserNotConfirmedException") {
-        friendly = "Tu correo no está confirmado. Revisa tu email y confirma la cuenta.";
+        friendly =
+          "Tu correo no está confirmado. Revisa tu email y confirma la cuenta.";
       } else if (code === "NotAuthorizedException") {
         friendly = "Credenciales inválidas. Verifica tu correo y contraseña.";
       } else if (code === "UserNotFoundException") {
@@ -69,21 +74,19 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
       <h2 className="text-xl font-bold text-center">Iniciar Sesión</h2>
-      <input
+      <Input
         type="email"
         placeholder="Correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full border rounded px-3 py-2"
         required
       />
       <div className="relative">
-        <input
+        <Input
           type={showPassword ? "text" : "password"}
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2 pr-12"
           required
         />
         <button
@@ -94,13 +97,14 @@ const LoginForm: React.FC<Props> = ({ onSuccess }) => {
           {showPassword ? "Ocultar" : "Ver"}
         </button>
       </div>
-      <button
+      <Button
         type="submit"
-        className="w-full bg-green-600 text-white py-2 rounded"
+        className="w-full"
         disabled={loading}
+        isLoading={loading}
       >
         {loading ? "Ingresando..." : "Iniciar Sesión"}
-      </button>
+      </Button>
       {import.meta.env.DEV && (
         <p className="text-[11px] text-gray-500 text-center">
           Usa VITE_USER_POOL_ID y VITE_COGNITO_CLIENT_ID en .env.development

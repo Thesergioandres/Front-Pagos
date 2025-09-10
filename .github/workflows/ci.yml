@@ -2,14 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,23 +27,26 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test
+        run: npm test
+
       - name: Build
-  run: npm run build
         env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION }}
+          VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID }}
+        run: npm run build
+
       - name: Upload build artifacts (dist)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
-          # Variables mínimas para pasar el build; ajusta si usas Cognito en build
-          VITE_API_BASE: ${{ secrets.VITE_API_BASE || 'https://example.com/api' }}
-          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION || 'us-east-1' }}
-          VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID || 'pool' }}
-          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID || 'client' }}
 
   smoke:
-    needs: build
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -58,22 +62,20 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
         env:
-          VITE_API_BASE: ${{ secrets.VITE_API_BASE || 'https://example.com/api' }}
-          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION || 'us-east-1' }}
-          VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID || 'pool' }}
-          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID || 'client' }}
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          VITE_COGNITO_REGION: ${{ secrets.VITE_COGNITO_REGION }}
+          VITE_USER_POOL_ID: ${{ secrets.VITE_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID }}
+        run: npm run build
 
       - name: Start preview server
         run: |
           nohup npm run preview -- --port 4173 --strictPort >/dev/null 2>&1 &
           echo $! > preview.pid
-          # Esperar a que el server esté arriba (máx 30s)
           for i in {1..30}; do
             if curl -sSf http://localhost:4173/ >/dev/null; then
               echo "Preview UP"; break; fi; sleep 1; done
-          # Verificación final
           curl -sSf http://localhost:4173/ >/dev/null
 
       - name: Smoke check title

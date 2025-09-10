@@ -1,4 +1,6 @@
 import type { CarteraFactura } from "../../types";
+import Button from "./Button";
+import { mapMoraColor } from "../../utils/moraColor";
 
 type Props = {
   data: CarteraFactura[];
@@ -8,36 +10,64 @@ type Props = {
 
 export default function CarteraTableUI({ data, loading, onReload }: Props) {
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <button
-        className="mb-4 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded"
+    <div className="w-full max-w-5xl mx-auto">
+      <Button
+        className="mb-4"
         onClick={onReload}
         disabled={loading}
+        isLoading={loading}
       >
         {loading ? "Cargando..." : "Ver Cartera"}
-      </button>
+      </Button>
       {Array.isArray(data) && data.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-xs">
+        <div
+          className="w-full max-w-full overflow-x-auto rounded-xl shadow-lg border border-brand-700 bg-white"
+          style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}
+        >
+          <table className="min-w-[800px] text-xs">
             <thead>
-              <tr>
-                <th>Factura ID</th>
-                <th>Cliente</th>
-                <th>Valor</th>
-                <th>Fecha Vencimiento</th>
-                <th>Días Mora</th>
-                <th>Color</th>
+              <tr className="bg-brand-800 text-white font-semibold">
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Factura ID
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Cliente
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Valor
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Saldo Pendiente
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Fecha Vencimiento
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Días Mora
+                </th>
+                <th className="px-3 py-2 sticky top-0 bg-brand-800 z-10">
+                  Color
+                </th>
               </tr>
             </thead>
             <tbody>
               {data.map((f) => (
-                <tr key={f.facturaId} style={{ background: f.color }}>
-                  <td>{f.facturaId}</td>
-                  <td>{f.cliente}</td>
-                  <td>{f.valor}</td>
-                  <td>{f.fechaVencimiento}</td>
-                  <td>{f.diasMora}</td>
-                  <td>{f.color}</td>
+                <tr
+                  key={f.facturaId}
+                  className="even:bg-brand-50"
+                  style={{ background: mapMoraColor(f.color || f.diasMora) }}
+                >
+                  <td className="px-3 py-2 text-brand-800">{f.facturaId}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.cliente}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.valor}</td>
+                  <td className="px-3 py-2 text-brand-800">
+                    {f.saldoPendiente}
+                  </td>
+                  <td className="px-3 py-2 text-brand-800">
+                    {f.fechaVencimiento}
+                  </td>
+                  <td className="px-3 py-2 text-brand-800">{f.diasMora}</td>
+                  <td className="px-3 py-2 text-brand-800">{f.color}</td>
                 </tr>
               ))}
             </tbody>
